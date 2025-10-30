@@ -20,22 +20,53 @@ export default function StorageTestPage() {
       setLoading(true);
       setError(null);
 
+      // 먼저 기본 Supabase 연결 테스트
+      const { data: healthData, error: healthError } = await supabase
+        .from('users')
+        .select('count')
+        .limit(1);
+
+      if (healthError) {
+        // 연결 자체가 실패한 경우
+        if (healthError.message.includes('JWT') || healthError.message.includes('auth')) {
+          throw new Error('Supabase 인증 실패: API 키를 확인해주세요.');
+        } else if (healthError.message.includes('relation') || healthError.message.includes('does not exist')) {
+          // 테이블이 없어도 연결은 성공한 것으로 간주
+          console.log('데이터베이스 연결은 성공했으나 users 테이블이 없습니다.');
+        } else {
+          throw new Error(`데이터베이스 연결 실패: ${healthError.message}`);
+        }
+      }
+
       // 버킷 목록을 가져와서 존재 여부 확인
       const { data, error } = await supabase.storage.listBuckets();
 
       if (error) {
-        throw error;
+        // Storage API 에러 처리
+        if (error.message.includes('JWT') || error.message.includes('auth')) {
+          throw new Error('Storage API 인증 실패: API 키를 확인해주세요.');
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          throw new Error('네트워크 연결 실패: 인터넷 연결을 확인해주세요.');
+        } else {
+          throw new Error(`Storage API 에러: ${error.message}`);
+        }
       }
 
-      const exists = data?.some(bucket => bucket.id === STORAGE_BUCKET) || false;
+      const exists =
+        data?.some((bucket) => bucket.id === STORAGE_BUCKET) || false;
       setBucketExists(exists);
 
       if (!exists) {
-        setError(`'${STORAGE_BUCKET}' 버킷이 존재하지 않습니다. Supabase Dashboard에서 생성해주세요.`);
+        setError(
+          `'${STORAGE_BUCKET}' 버킷이 존재하지 않습니다. Supabase Dashboard에서 생성해주세요.`,
+        );
+      } else {
+        setError(null); // 성공 시 에러 초기화
       }
     } catch (err) {
       setBucketExists(false);
-      setError(err instanceof Error ? err.message : "버킷 확인 실패");
+      const errorMessage = err instanceof Error ? err.message : "알 수 없는 에러";
+      setError(errorMessage);
       console.error("Check bucket error:", err);
     } finally {
       setLoading(false);
@@ -116,7 +147,9 @@ export default function StorageTestPage() {
           {bucketExists === true && (
             <>
               <LuFile className="w-6 h-6 text-green-600" />
-              <span className="text-green-600 font-semibold">버킷 연결 성공!</span>
+              <span className="text-green-600 font-semibold">
+                버킷 연결 성공!
+              </span>
             </>
           )}
           {bucketExists === false && (
@@ -137,7 +170,9 @@ export default function StorageTestPage() {
         <div className="space-y-2">
           <div className="flex gap-2">
             <span className="font-semibold min-w-[200px]">STORAGE_BUCKET:</span>
-            <span className={STORAGE_BUCKET ? "text-green-600" : "text-red-600"}>
+            <span
+              className={STORAGE_BUCKET ? "text-green-600" : "text-red-600"}
+            >
               {STORAGE_BUCKET ? `✅ ${STORAGE_BUCKET}` : "❌ 설정되지 않음"}
             </span>
           </div>

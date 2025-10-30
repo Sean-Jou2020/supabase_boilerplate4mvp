@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
-import { createSupabaseClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { LuFile, LuTriangleAlert } from "react-icons/lu";
 import Link from "next/link";
@@ -10,7 +9,6 @@ import Link from "next/link";
 const STORAGE_BUCKET = process.env.NEXT_PUBLIC_STORAGE_BUCKET || "uploads";
 
 function StorageTestInner() {
-  const supabase = createSupabaseClient();
   const [bucketExists, setBucketExists] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +58,7 @@ function StorageTestInner() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, []);
 
   // 페이지 로드 시 자동 확인
   useEffect(() => {
@@ -96,9 +94,9 @@ function StorageTestInner() {
               <br />
               1. Supabase Dashboard에서 Storage 메뉴로 이동
               <br />
-              2. "Create bucket" 버튼 클릭
+              2. &quot;Create bucket&quot; 버튼 클릭
               <br />
-              3. 버킷 이름으로 "uploads" 입력 후 생성
+              3. 버킷 이름으로 &quot;uploads&quot; 입력 후 생성
             </p>
           </div>
           <Button

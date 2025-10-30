@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { LuShield, LuCheck, LuX, LuTriangleAlert } from "react-icons/lu";
 import Link from "next/link";
 
-interface UserData {
-  id: string;
-  clerk_id: string;
-  name: string;
-  created_at: string;
-}
+// 사용자 데이터 타입이 필요해지면 아래 인터페이스를 복원하세요.
+// interface UserData {
+//   id: string;
+//   clerk_id: string;
+//   name: string;
+//   created_at: string;
+// }
 
 export default function AuthTestPage() {
   const supabase = createSupabaseClient();
@@ -32,9 +33,14 @@ export default function AuthTestPage() {
 
       if (error) {
         // RLS나 권한 에러는 무시하고 연결만 확인
-        if (error.message.includes("permission denied") || error.message.includes("RLS")) {
+        if (
+          error.message.includes("permission denied") ||
+          error.message.includes("RLS")
+        ) {
           setConnectionStatus("success");
-          setError("테이블 권한이 없지만 연결은 성공했습니다. schema.sql을 실행해주세요.");
+          setError(
+            "테이블 권한이 없지만 연결은 성공했습니다. schema.sql을 실행해주세요.",
+          );
           return;
         }
         throw error;
@@ -62,9 +68,7 @@ export default function AuthTestPage() {
         >
           ← 홈으로 돌아가기
         </Link>
-        <h1 className="text-4xl font-bold mb-2">
-          Supabase 연결 테스트
-        </h1>
+        <h1 className="text-4xl font-bold mb-2">Supabase 연결 테스트</h1>
         <p className="text-gray-600">
           Supabase 데이터베이스 연결 상태를 테스트합니다.
         </p>
@@ -149,14 +153,32 @@ export default function AuthTestPage() {
         <div className="space-y-2">
           <div className="flex gap-2">
             <span className="font-semibold min-w-[200px]">SUPABASE_URL:</span>
-            <span className={process.env.NEXT_PUBLIC_SUPABASE_URL ? "text-green-600" : "text-red-600"}>
-              {process.env.NEXT_PUBLIC_SUPABASE_URL ? "✅ 설정됨" : "❌ 설정되지 않음"}
+            <span
+              className={
+                process.env.NEXT_PUBLIC_SUPABASE_URL
+                  ? "text-green-600"
+                  : "text-red-600"
+              }
+            >
+              {process.env.NEXT_PUBLIC_SUPABASE_URL
+                ? "✅ 설정됨"
+                : "❌ 설정되지 않음"}
             </span>
           </div>
           <div className="flex gap-2">
-            <span className="font-semibold min-w-[200px]">SUPABASE_ANON_KEY:</span>
-            <span className={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "text-green-600" : "text-red-600"}>
-              {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "✅ 설정됨" : "❌ 설정되지 않음"}
+            <span className="font-semibold min-w-[200px]">
+              SUPABASE_ANON_KEY:
+            </span>
+            <span
+              className={
+                process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+                  ? "text-green-600"
+                  : "text-red-600"
+              }
+            >
+              {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+                ? "✅ 설정됨"
+                : "❌ 설정되지 않음"}
             </span>
           </div>
         </div>
@@ -166,7 +188,9 @@ export default function AuthTestPage() {
       <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
         <h3 className="font-bold mb-2">💡 이 페이지의 작동 원리</h3>
         <ul className="text-sm text-blue-900 space-y-1 list-disc list-inside">
-          <li>Supabase 클라이언트를 사용하여 데이터베이스 연결을 테스트합니다</li>
+          <li>
+            Supabase 클라이언트를 사용하여 데이터베이스 연결을 테스트합니다
+          </li>
           <li>환경 변수가 올바르게 설정되었는지 확인합니다</li>
           <li>인터넷 연결과 Supabase 프로젝트 상태를 검증합니다</li>
           <li>현재 Clerk 통합 없이 Supabase만 사용합니다</li>

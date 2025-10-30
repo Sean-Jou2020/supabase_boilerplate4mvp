@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   },
   // not-found 페이지를 빌드 시점에 prerender하지 않음
   generateBuildId: async () => {
-    return 'build-' + Date.now()
+    return "build-" + Date.now();
   },
 };
 

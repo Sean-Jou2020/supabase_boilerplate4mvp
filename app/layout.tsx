@@ -6,15 +6,24 @@ import Navbar from "@/components/Navbar";
 import "./globals.css";
 
 // ClerkProvider를 동적으로 import하여 빌드 시점 초기화 방지
-const ClerkProvider = dynamic(() => import("@clerk/nextjs").then(mod => mod.ClerkProvider), {
-  ssr: false,
-  loading: () => null
-});
+const ClerkProvider = dynamic(
+  () => import("@clerk/nextjs").then((mod) => mod.ClerkProvider),
+  {
+    ssr: false,
+    loading: () => null,
+  },
+);
 
-const SyncUserProvider = dynamic(() => import("@/components/providers/sync-user-provider").then(mod => mod.SyncUserProvider), {
-  ssr: false,
-  loading: () => null
-});
+const SyncUserProvider = dynamic(
+  () =>
+    import("@/components/providers/sync-user-provider").then(
+      (mod) => mod.SyncUserProvider,
+    ),
+  {
+    ssr: false,
+    loading: () => null,
+  },
+);
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

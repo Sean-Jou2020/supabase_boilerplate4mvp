@@ -30,6 +30,26 @@ export default function RootLayout({
   // 개발 환경에서만 hydration 경고 억제
   const isDevelopment = process.env.NODE_ENV === "development";
 
+  // Clerk 환경 변수 확인
+  const hasClerkKeys = !!(
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+    process.env.CLERK_SECRET_KEY
+  );
+
+  if (!hasClerkKeys) {
+    return (
+      <html lang="ko">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          suppressHydrationWarning={isDevelopment}
+        >
+          <Navbar />
+          {children}
+        </body>
+      </html>
+    );
+  }
+
   return (
     <ClerkProvider localization={koKR}>
       <html lang="ko">

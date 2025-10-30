@@ -5,10 +5,10 @@ const isProtectedRoute = createRouteMatcher([
   // 예: "/dashboard(.*)", "/profile(.*)"
 ]);
 
-export default clerkMiddleware((auth, req) => {
-  const { userId, redirectToSignIn } = auth();
-  if (!userId && isProtectedRoute(req)) {
-    return redirectToSignIn({ returnBackUrl: req.url });
+export default clerkMiddleware(async (auth, req) => {
+  const session = await auth();
+  if (!session.userId && isProtectedRoute(req)) {
+    return session.redirectToSignIn({ returnBackUrl: req.url });
   }
 });
 

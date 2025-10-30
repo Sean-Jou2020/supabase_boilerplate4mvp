@@ -1,7 +1,16 @@
-export default function middleware() {
-  // 기본 middleware - Clerk 없이 작동
-  return;
-}
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+
+const isProtectedRoute = createRouteMatcher([
+  // 여기에 보호할 라우트를 추가하세요
+  // 예: "/dashboard(.*)", "/profile(.*)"
+]);
+
+export default clerkMiddleware((auth, req) => {
+  // 보호된 라우트에 대해서만 인증 요구
+  if (isProtectedRoute(req)) {
+    auth().protect();
+  }
+});
 
 export const config = {
   matcher: [

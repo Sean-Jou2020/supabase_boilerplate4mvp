@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
+import { koKR } from "@clerk/localizations";
 
 import Navbar from "@/components/Navbar";
+import { SyncUserProvider } from "@/components/providers/sync-user-provider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,14 +31,18 @@ export default function RootLayout({
   const isDevelopment = process.env.NODE_ENV === "development";
 
   return (
-    <html lang="ko">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        suppressHydrationWarning={isDevelopment}
-      >
-        <Navbar />
-        {children}
-      </body>
-    </html>
+    <ClerkProvider localization={koKR}>
+      <html lang="ko">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          suppressHydrationWarning={isDevelopment}
+        >
+          <SyncUserProvider>
+            <Navbar />
+            {children}
+          </SyncUserProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { createSupabaseClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { LuFile, LuTriangleAlert } from "react-icons/lu";
@@ -8,52 +9,39 @@ import Link from "next/link";
 
 const STORAGE_BUCKET = process.env.NEXT_PUBLIC_STORAGE_BUCKET || "uploads";
 
-export default function StorageTestPage() {
+function StorageTestInner() {
   const supabase = createSupabaseClient();
   const [bucketExists, setBucketExists] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Storage 버킷 존재 여부 확인
+  // Storage 버킷 존재 여부 확인 (서버 라우트 사용)
   const checkBucket = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // 먼저 기본 Supabase 연결 테스트
-      const { data: healthData, error: healthError } = await supabase
-        .from('users')
-        .select('count')
-        .limit(1);
+      // 서버 라우트로 관리자 권한 검사
+      const resp = await fetch("/api/storage/check-bucket", {
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
+      const contentType = resp.headers.get("content-type") || "";
+      const body = contentType.includes("application/json")
+        ? await resp.json()
+        : { ok: false, error: await resp.text() };
 
-      if (healthError) {
-        // 연결 자체가 실패한 경우
-        if (healthError.message.includes('JWT') || healthError.message.includes('auth')) {
-          throw new Error('Supabase 인증 실패: API 키를 확인해주세요.');
-        } else if (healthError.message.includes('relation') || healthError.message.includes('does not exist')) {
-          // 테이블이 없어도 연결은 성공한 것으로 간주
-          console.log('데이터베이스 연결은 성공했으나 users 테이블이 없습니다.');
-        } else {
-          throw new Error(`데이터베이스 연결 실패: ${healthError.message}`);
-        }
+      if (!resp.ok || !body.ok) {
+        const message =
+          typeof body === "object" && body && "error" in body
+            ? (body as any).error
+            : "버킷 확인 실패";
+        throw new Error(
+          typeof message === "string" ? message : "버킷 확인 실패",
+        );
       }
 
-      // 버킷 목록을 가져와서 존재 여부 확인
-      const { data, error } = await supabase.storage.listBuckets();
-
-      if (error) {
-        // Storage API 에러 처리
-        if (error.message.includes('JWT') || error.message.includes('auth')) {
-          throw new Error('Storage API 인증 실패: API 키를 확인해주세요.');
-        } else if (error.message.includes('network') || error.message.includes('fetch')) {
-          throw new Error('네트워크 연결 실패: 인터넷 연결을 확인해주세요.');
-        } else {
-          throw new Error(`Storage API 에러: ${error.message}`);
-        }
-      }
-
-      const exists =
-        data?.some((bucket) => bucket.id === STORAGE_BUCKET) || false;
+      const exists = Boolean((body as any).exists);
       setBucketExists(exists);
 
       if (!exists) {
@@ -65,7 +53,8 @@ export default function StorageTestPage() {
       }
     } catch (err) {
       setBucketExists(false);
-      const errorMessage = err instanceof Error ? err.message : "알 수 없는 에러";
+      const errorMessage =
+        err instanceof Error ? err.message : "알 수 없는 에러";
       setError(errorMessage);
       console.error("Check bucket error:", err);
     } finally {
@@ -191,4 +180,17 @@ export default function StorageTestPage() {
       </div>
     </div>
   );
+}
+
+// 브라우저 확장프로그램이 주입하는 속성으로 인한 SSR/CSR 불일치 회피를 위해
+// 해당 페이지를 클라이언트 전용으로 렌더링합니다.
+const ClientOnlyStorageTest = dynamic(
+  async () => ({ default: StorageTestInner }),
+  {
+    ssr: false,
+  },
+);
+
+export default function StorageTestPage() {
+  return <ClientOnlyStorageTest />;
 }

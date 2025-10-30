@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { createSupabaseClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { LuShield, LuCheck, LuX, LuTriangleAlert } from "react-icons/lu";
@@ -14,7 +15,7 @@ import Link from "next/link";
 //   created_at: string;
 // }
 
-export default function AuthTestPage() {
+function AuthTestInner() {
   const supabase = createSupabaseClient();
 
   const [connectionStatus, setConnectionStatus] = useState<
@@ -198,4 +199,14 @@ export default function AuthTestPage() {
       </div>
     </div>
   );
+}
+
+// 브라우저 확장프로그램이 주입하는 속성으로 인한 SSR/CSR 불일치 회피를 위해
+// 해당 페이지를 클라이언트 전용으로 렌더링합니다.
+const ClientOnlyAuthTest = dynamic(async () => ({ default: AuthTestInner }), {
+  ssr: false,
+});
+
+export default function AuthTestPage() {
+  return <ClientOnlyAuthTest />;
 }

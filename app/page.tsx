@@ -4,10 +4,13 @@ import { RiSupabaseFill } from "react-icons/ri";
 
 export default function Home() {
   return (
-    <main className="min-h-[calc(100vh-80px)] flex items-center px-8 py-16 lg:py-24">
+    <main
+      className="min-h-[calc(100vh-80px)] flex items-center px-8 py-16 lg:py-24"
+      suppressHydrationWarning={true}
+    >
       <section className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start lg:items-center">
         {/* 좌측: 환영 메시지 */}
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-8" suppressHydrationWarning={true}>
           <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
             SaaS 앱 템플릿에 오신 것을 환영합니다
           </h1>
@@ -18,7 +21,7 @@ export default function Home() {
         </div>
 
         {/* 우측: 버튼 두 개 세로 정렬 */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6" suppressHydrationWarning={true}>
           <Link href="/storage-test" className="w-full">
             <Button className="w-full h-28 flex items-center justify-center gap-4 text-xl shadow-lg hover:shadow-xl transition-shadow">
               <RiSupabaseFill className="w-8 h-8" />

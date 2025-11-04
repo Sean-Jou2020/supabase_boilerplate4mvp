@@ -47,20 +47,18 @@
 ## Phase 2: 상품 기능 (1주)
 
 - [ ] 홈페이지 (`app/page.tsx`)
-  - [ ] 심플한 랜딩 페이지 디자인
-  - [ ] CTA 버튼 (상품 보기 등)
-  - [ ] 상품 목록 섹션
-    - [ ] Supabase `products` 테이블 조회
-    - [ ] `is_active = true` 필터링
-    - [ ] 상품 카드 컴포넌트 (이미지, 이름, 가격, 카테고리)
-    - [ ] 상품 상세 페이지로 이동 링크
-    - [ ] 반응형 그리드 레이아웃
-  - [ ] 카테고리 필터링 기능
-    - [ ] 카테고리 탭/버튼 UI (electronics, clothing, books, food, sports, beauty, home)
-    - [ ] 선택된 카테고리별 상품 필터링
-    - [ ] 전체 상품 보기 옵션
+  - [x] 상품목록 표시
+    - [x] Supabase `products` 테이블 조회
+    - [x] `is_active = true` 필터링
+    - [x] 상품 카드 컴포넌트 (이미지, 이름, 가격, 카테고리)
+    - [x] 상품 상세 페이지로 이동 링크
+    - [x] 반응형 그리드 레이아웃
+  - [ ] 카테고리 기능 (다중 선택 + SSR)
+    - [ ] 카테고리 버튼 UI (electronics, clothing, books, food, sports, beauty, home)
+    - [ ] URL 쿼리 기반 필터링 (`?categories=electronics,books`)
+    - [ ] 전체 상품 보기 옵션 (쿼리 제거)
     - [ ] 선택된 카테고리 하이라이트 스타일
-  - [ ] 인기 상품 섹션
+  - [ ] 인기상품 기능
     - [ ] 인기 상품 조회 로직 구현 (주문 수 또는 조회 수 기반, 또는 임시로 최신 상품)
     - [ ] 인기 상품 카드 컴포넌트
     - [ ] "인기 상품" 섹션 헤더 및 레이아웃
@@ -71,8 +69,8 @@
   - [ ] 카테고리별 그룹화 표시
   - [ ] 가격/이름 기준 정렬 기능
   - [ ] 페이지네이션 또는 무한 스크롤 (선택)
-- [ ] 카테고리 필터링
-  - [ ] 쿼리스트링 기반 필터링 (`?category=electronics`)
+- [ ] 카테고리 필터링 (다중 선택)
+  - [ ] 쿼리스트링 기반 필터링 (`?categories=electronics,books`)
   - [ ] 카테고리 목록 표시 (electronics, clothing, books, food, sports, beauty, home)
   - [ ] 선택된 카테고리 하이라이트
 - [ ] 상품 상세 페이지 (`app/products/[id]/page.tsx`)

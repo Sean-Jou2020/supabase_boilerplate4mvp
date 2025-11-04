@@ -14,7 +14,7 @@ const Navbar = () => {
       suppressHydrationWarning={true}
     >
       <Link href="/" className="text-2xl font-bold">
-        SaaS Template
+        OZ SHOP
       </Link>
       <div className="flex gap-4 items-center" suppressHydrationWarning={true}>
         <Link href="/auth-test">

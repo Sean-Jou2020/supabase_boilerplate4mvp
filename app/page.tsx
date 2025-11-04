@@ -1,16 +1,20 @@
-import { getActiveProducts, getActiveProductsByCategories } from "@/lib/products";
+import { getActiveProducts, getActiveProductsByCategories, getPopularProducts } from "@/lib/products";
 import { ProductCard } from "@/components/product-card";
 import { CategoryFilter } from "@/components/category-filter";
+import { PopularProductsCarousel } from "@/components/popular-products-carousel";
 import { parseCategoriesParam } from "@/lib/categories";
 
 /**
  * 홈페이지
  * 활성화된 상품 목록을 반응형 그리드 레이아웃으로 표시합니다.
+ * 인기상품 섹션과 전체 상품 목록을 포함합니다.
  */
 export default async function Home({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
   const selectedCategories = parseCategoriesParam(searchParams?.categories);
   let products = [] as any[];
+  let popularProducts = [] as any[];
   let error = null;
+  let popularError = null;
 
   try {
     if (selectedCategories.length > 0) {
@@ -21,6 +25,14 @@ export default async function Home({ searchParams }: { searchParams?: { [key: st
   } catch (err) {
     console.error("상품 조회 실패:", err);
     error = err instanceof Error ? err.message : "상품을 불러오는 중 오류가 발생했습니다.";
+  }
+
+  // 인기상품 조회 (항상 표시)
+  try {
+    popularProducts = await getPopularProducts(8);
+  } catch (err) {
+    console.error("인기상품 조회 실패:", err);
+    popularError = err instanceof Error ? err.message : null;
   }
 
   return (
@@ -35,6 +47,20 @@ export default async function Home({ searchParams }: { searchParams?: { [key: st
             다양한 상품을 확인하고 구매해보세요
           </p>
         </section>
+
+        {/* 인기상품 섹션 (항상 표시) */}
+        {popularProducts.length > 0 && (
+          <section className="mb-16">
+            <h2 className="mb-6 text-2xl font-semibold md:text-3xl">인기 상품</h2>
+            {popularError ? (
+              <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center">
+                <p className="text-destructive">{popularError}</p>
+              </div>
+            ) : (
+              <PopularProductsCarousel products={popularProducts} />
+            )}
+          </section>
+        )}
 
         {/* 상품 목록 섹션 */}
         <section>

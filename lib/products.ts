@@ -26,7 +26,7 @@ export async function getActiveProducts(): Promise<Product[]> {
         hasKey: !!supabaseKey,
       });
       throw new Error(
-        "Supabase 환경 변수가 설정되지 않았습니다. NEXT_PUBLIC_SUPABASE_URL과 NEXT_PUBLIC_SUPABASE_ANON_KEY를 확인해주세요."
+        "Supabase 환경 변수가 설정되지 않았습니다. NEXT_PUBLIC_SUPABASE_URL과 NEXT_PUBLIC_SUPABASE_ANON_KEY를 확인해주세요.",
       );
     }
 
@@ -56,7 +56,7 @@ export async function getActiveProducts(): Promise<Product[]> {
 
       // 에러 메시지 문자열 검사 (대소문자 구분 없이)
       const errorMessageLower = errorMessage.toLowerCase();
-      
+
       // 테이블이 없는 경우
       if (
         errorMessageLower.includes("could not find the table") ||
@@ -67,12 +67,12 @@ export async function getActiveProducts(): Promise<Product[]> {
       ) {
         throw new Error(
           "products 테이블을 찾을 수 없습니다.\n\n" +
-          "해결 방법:\n" +
-          "1. Supabase Dashboard (https://supabase.com/dashboard) 접속\n" +
-          "2. 프로젝트 선택 → SQL Editor 메뉴\n" +
-          "3. supabase/migrations/20251103124856_create_shopping_mall_schema.sql 파일 내용 복사\n" +
-          "4. SQL Editor에 붙여넣고 'Run' 클릭\n" +
-          "5. 성공 메시지 확인 후 페이지 새로고침"
+            "해결 방법:\n" +
+            "1. Supabase Dashboard (https://supabase.com/dashboard) 접속\n" +
+            "2. 프로젝트 선택 → SQL Editor 메뉴\n" +
+            "3. supabase/migrations/20251103124856_create_shopping_mall_schema.sql 파일 내용 복사\n" +
+            "4. SQL Editor에 붙여넣고 'Run' 클릭\n" +
+            "5. 성공 메시지 확인 후 페이지 새로고침",
         );
       }
 
@@ -84,9 +84,9 @@ export async function getActiveProducts(): Promise<Product[]> {
       ) {
         throw new Error(
           "데이터베이스 접근 권한이 없습니다.\n\n" +
-          "해결 방법:\n" +
-          "1. Supabase Dashboard에서 RLS가 비활성화되어 있는지 확인\n" +
-          "2. 테이블 권한이 anon, authenticated, service_role에 부여되었는지 확인"
+            "해결 방법:\n" +
+            "1. Supabase Dashboard에서 RLS가 비활성화되어 있는지 확인\n" +
+            "2. 테이블 권한이 anon, authenticated, service_role에 부여되었는지 확인",
         );
       }
 
@@ -98,13 +98,15 @@ export async function getActiveProducts(): Promise<Product[]> {
       ) {
         throw new Error(
           `Supabase 연결 실패: ${errorMessage}\n\n` +
-          "환경 변수 NEXT_PUBLIC_SUPABASE_URL이 올바른지 확인해주세요."
+            "환경 변수 NEXT_PUBLIC_SUPABASE_URL이 올바른지 확인해주세요.",
         );
       }
 
       // 일반 에러
       throw new Error(
-        `상품 조회 실패: ${errorMessage}${errorDetails ? `\n상세: ${errorDetails}` : ""}${errorHint ? `\n힌트: ${errorHint}` : ""}`
+        `상품 조회 실패: ${errorMessage}${
+          errorDetails ? `\n상세: ${errorDetails}` : ""
+        }${errorHint ? `\n힌트: ${errorHint}` : ""}`,
       );
     }
 
@@ -128,7 +130,7 @@ export async function getActiveProducts(): Promise<Product[]> {
  * 빈 배열 또는 null/undefined가 전달되면 전체 활성 상품을 반환합니다.
  */
 export async function getActiveProductsByCategories(
-  categories?: string[] | null
+  categories?: string[] | null,
 ): Promise<Product[]> {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -140,7 +142,7 @@ export async function getActiveProductsByCategories(
         hasKey: !!supabaseKey,
       });
       throw new Error(
-        "Supabase 환경 변수가 설정되지 않았습니다. NEXT_PUBLIC_SUPABASE_URL과 NEXT_PUBLIC_SUPABASE_ANON_KEY를 확인해주세요."
+        "Supabase 환경 변수가 설정되지 않았습니다. NEXT_PUBLIC_SUPABASE_URL과 NEXT_PUBLIC_SUPABASE_ANON_KEY를 확인해주세요.",
       );
     }
 
@@ -174,7 +176,9 @@ export async function getActiveProductsByCategories(
       });
 
       throw new Error(
-        `상품 조회 실패: ${errorMessage}${errorDetails ? `\n상세: ${errorDetails}` : ""}${errorHint ? `\n힌트: ${errorHint}` : ""}`
+        `상품 조회 실패: ${errorMessage}${
+          errorDetails ? `\n상세: ${errorDetails}` : ""
+        }${errorHint ? `\n힌트: ${errorHint}` : ""}`,
       );
     }
 
@@ -191,3 +195,72 @@ export async function getActiveProductsByCategories(
   }
 }
 
+/**
+ * 인기 상품을 조회합니다.
+ * MVP 단계에서는 최신 상품 중 상위 N개를 인기상품으로 표시합니다.
+ * 추후 주문 수 또는 조회 수 기반으로 변경 가능합니다.
+ * @param limit - 조회할 상품 수 (기본값: 8)
+ * @returns 인기 상품 목록
+ */
+export async function getPopularProducts(
+  limit: number = 8,
+): Promise<Product[]> {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.error("Supabase 환경 변수 확인:", {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseKey,
+      });
+      throw new Error(
+        "Supabase 환경 변수가 설정되지 않았습니다. NEXT_PUBLIC_SUPABASE_URL과 NEXT_PUBLIC_SUPABASE_ANON_KEY를 확인해주세요.",
+      );
+    }
+
+    const supabase = createClerkSupabaseClient();
+
+    // MVP 단계: 최신 상품 중 상위 N개를 인기상품으로 표시
+    // 추후: 주문 수(order_items) 또는 조회 수 기반으로 변경 가능
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      const errorMessage = error.message || String(error);
+      const errorDetails = (error as any).details || "";
+      const errorHint = (error as any).hint || "";
+      const errorCode = (error as any).code || "";
+
+      console.error("인기 상품 조회 에러 상세:", {
+        error,
+        message: errorMessage,
+        details: errorDetails,
+        hint: errorHint,
+        code: errorCode,
+        fullError: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+      });
+
+      throw new Error(
+        `인기 상품 조회 실패: ${errorMessage}${
+          errorDetails ? `\n상세: ${errorDetails}` : ""
+        }${errorHint ? `\n힌트: ${errorHint}` : ""}`,
+      );
+    }
+
+    if (!data) return [];
+
+    return data.map((item) => ({
+      ...item,
+      price: Number(item.price),
+      stock_quantity: Number(item.stock_quantity),
+    })) as Product[];
+  } catch (error) {
+    console.error("getPopularProducts 에러:", error);
+    throw error;
+  }
+}

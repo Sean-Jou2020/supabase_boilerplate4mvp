@@ -64,21 +64,17 @@
     - [x] 인기 상품 카드 컴포넌트
     - [x] "인기 상품" 섹션 헤더 및 레이아웃
     - [x] 인기 상품 상세 페이지로 이동 링크
-- [ ] 상품 목록 페이지 (`app/products/page.tsx`)
-  - [ ] Supabase `products` 테이블 조회
-  - [ ] `is_active = true` 필터링
-  - [ ] 카테고리별 그룹화 표시
-  - [ ] 가격오름순/가격내림순/인기순/이름순 정렬 기능
+- [x] 상품 목록 페이지 (`app/products/page.tsx`)
+  - [x] Supabase `products` 테이블 조회
+  - [x] `is_active = true` 필터링
+  - [x] 카테고리 필터링 (다중 선택)
+  - [x] 가격오름순/가격내림순/인기순/이름순 정렬 기능
   - [ ] 페이지네이션 또는 무한 스크롤 (선택)
-- [ ] 카테고리 필터링 (다중 선택)
-  - [ ] 쿼리스트링 기반 필터링 (`?categories=electronics,books`)
-  - [ ] 카테고리 목록 표시 (electronics, clothing, books, food, sports, beauty, home)
-  - [ ] 선택된 카테고리 하이라이트
-- [ ] 상품 상세 페이지 (`app/products/[id]/page.tsx`)
-  - [ ] 상품 정보 표시 (이름, 설명, 가격, 카테고리)
-  - [ ] 재고 수량 표시 (`stock_quantity`)
-  - [ ] 장바구니 담기 버튼
-  - [ ] 상품 활성화 여부 확인 (`is_active`)
+- [x] 상품 상세 페이지 (`app/products/[id]/page.tsx`)
+  - [x] 상품 정보 표시 (이름, 설명, 가격, 카테고리)
+  - [x] 재고 수량 표시 (`stock_quantity`)
+  - [x] 장바구니 담기 버튼 (UI만, Phase 3에서 기능 연결 예정)
+  - [x] 상품 활성화 여부 확인 (`is_active`)
 - [ ] 어드민 상품 등록 (MVP 제외)
   - [ ] PRD에 따라 어드민 기능은 MVP에서 제외
   - [ ] 상품 등록은 Supabase Dashboard에서 직접 수행

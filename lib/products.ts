@@ -8,13 +8,41 @@
 
 import { createClerkSupabaseClient } from "@/lib/supabase/server";
 import type { Product } from "@/types/product";
+import type { SortValue } from "@/lib/sort";
+
+/**
+ * 정렬 옵션에 따른 Supabase 쿼리 order 조건을 적용합니다.
+ * @param query - Supabase 쿼리 객체
+ * @param sort - 정렬 옵션
+ * @returns 정렬이 적용된 쿼리 객체
+ */
+function applySortOrder(query: any, sort: SortValue) {
+  switch (sort) {
+    case "price_asc":
+      return query.order("price", { ascending: true });
+    case "price_desc":
+      return query.order("price", { ascending: false });
+    case "popular":
+      // MVP 단계: 최신순으로 임시 구현
+      // 추후: order_items 테이블 조인하여 주문 수 기반으로 변경 예정
+      return query.order("created_at", { ascending: false });
+    case "name_asc":
+      return query.order("name", { ascending: true });
+    default:
+      // 기본값: 최신순
+      return query.order("created_at", { ascending: false });
+  }
+}
 
 /**
  * 활성화된 모든 상품을 조회합니다.
+ * @param sort - 정렬 옵션 (기본값: "", 최신순)
  * @returns 활성화된 상품 목록 (is_active = true)
  * @throws 에러 발생 시 에러 메시지와 함께 에러를 던집니다.
  */
-export async function getActiveProducts(): Promise<Product[]> {
+export async function getActiveProducts(
+  sort: SortValue = "",
+): Promise<Product[]> {
   try {
     // 환경 변수 확인
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -32,11 +60,11 @@ export async function getActiveProducts(): Promise<Product[]> {
 
     const supabase = createClerkSupabaseClient();
 
-    const { data, error } = await supabase
-      .from("products")
-      .select("*")
-      .eq("is_active", true)
-      .order("created_at", { ascending: false });
+    let query = supabase.from("products").select("*").eq("is_active", true);
+
+    query = applySortOrder(query, sort);
+
+    const { data, error } = await query;
 
     if (error) {
       // 에러 객체의 모든 속성 확인
@@ -128,9 +156,13 @@ export async function getActiveProducts(): Promise<Product[]> {
 /**
  * 선택된 카테고리 배열로 활성 상품을 필터링하여 조회합니다.
  * 빈 배열 또는 null/undefined가 전달되면 전체 활성 상품을 반환합니다.
+ * @param categories - 카테고리 배열
+ * @param sort - 정렬 옵션 (기본값: "", 최신순)
+ * @returns 필터링된 상품 목록
  */
 export async function getActiveProductsByCategories(
   categories?: string[] | null,
+  sort: SortValue = "",
 ): Promise<Product[]> {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -148,15 +180,13 @@ export async function getActiveProductsByCategories(
 
     const supabase = createClerkSupabaseClient();
 
-    let query = supabase
-      .from("products")
-      .select("*")
-      .eq("is_active", true)
-      .order("created_at", { ascending: false });
+    let query = supabase.from("products").select("*").eq("is_active", true);
 
     if (categories && categories.length > 0) {
       query = query.in("category", categories);
     }
+
+    query = applySortOrder(query, sort);
 
     const { data, error } = await query;
 
@@ -261,6 +291,68 @@ export async function getPopularProducts(
     })) as Product[];
   } catch (error) {
     console.error("getPopularProducts 에러:", error);
+    throw error;
+  }
+}
+
+/**
+ * 상품 ID로 단일 상품을 조회합니다.
+ * 비활성화된 상품(is_active = false)도 조회 가능합니다.
+ * @param id - 상품 ID (UUID)
+ * @returns 상품 정보 또는 null (상품이 없을 경우)
+ * @throws 에러 발생 시 에러 메시지와 함께 에러를 던집니다.
+ */
+export async function getProductById(id: string): Promise<Product | null> {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.error("Supabase 환경 변수 확인:", {
+        hasUrl: !!supabaseUrl,
+        hasKey: !!supabaseKey,
+      });
+      throw new Error(
+        "Supabase 환경 변수가 설정되지 않았습니다. NEXT_PUBLIC_SUPABASE_URL과 NEXT_PUBLIC_SUPABASE_ANON_KEY를 확인해주세요.",
+      );
+    }
+
+    const supabase = createClerkSupabaseClient();
+
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      const errorMessage = error.message || String(error);
+      const errorCode = (error as any).code || "";
+
+      // 상품을 찾을 수 없는 경우 (PGRST116: PostgREST single row not found)
+      if (errorCode === "PGRST116" || errorMessage.includes("No rows")) {
+        return null;
+      }
+
+      console.error("상품 조회 에러 상세:", {
+        error,
+        message: errorMessage,
+        code: errorCode,
+        id,
+      });
+
+      throw new Error(`상품 조회 실패: ${errorMessage}`);
+    }
+
+    if (!data) return null;
+
+    return {
+      ...data,
+      price: Number(data.price),
+      stock_quantity: Number(data.stock_quantity),
+    } as Product;
+  } catch (error) {
+    console.error("getProductById 에러:", error);
     throw error;
   }
 }

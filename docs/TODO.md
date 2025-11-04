@@ -40,6 +40,8 @@
   - [x] Root Layout 확인 (`app/layout.tsx`)
   - [x] Navbar 컴포넌트 확인
     - [x] 브랜드명 "OZ SHOP"으로 변경 (`components/Navbar.tsx`)
+    - [x] 헤더에 장바구니 아이콘 추가 (어떤 페이지에서든 접근 가능)
+    - [x] 인증 테스트 버튼 제거
   - [x] 기본 라우팅 구조 설계 (`app/page.tsx`, `app/auth-test`, `app/storage-test` 등)
 - [ ] 설정 파일 정리
   - [ ] `next.config.ts` 경고 제거
@@ -81,18 +83,19 @@
 
 ## Phase 3: 장바구니 & 주문 (1주)
 
-- [ ] 장바구니 기능
-  - [ ] 장바구니 페이지 (`app/cart/page.tsx`)
-  - [ ] `cart_items` 테이블 연동
-    - [ ] `clerk_id` 기반 조회 (인증된 사용자만)
-    - [ ] `clerk_id + product_id` UNIQUE 제약 확인
-  - [ ] 장바구니 추가 기능
-    - [ ] 상품 상세 페이지에서 추가
-    - [ ] 중복 상품은 수량 증가
-  - [ ] 장바구니 삭제 기능
-  - [ ] 수량 변경 기능 (증가/감소)
-  - [ ] 금액 합계 계산 (price × quantity)
-  - [ ] 빈 장바구니 상태 처리
+- [x] 장바구니 기능
+  - [x] 장바구니 페이지 (`app/cart/page.tsx`)
+  - [x] 헤더에 장바구니 아이콘 추가 (Navbar 컴포넌트)
+  - [x] `cart_items` 테이블 연동
+    - [x] `clerk_id` 기반 조회 (인증된 사용자만)
+    - [x] `clerk_id + product_id` UNIQUE 제약 확인
+  - [x] 장바구니 추가 기능
+    - [x] 상품 상세 페이지에서 추가
+    - [x] 중복 상품은 수량 증가
+  - [x] 장바구니 삭제 기능
+  - [x] 수량 변경 기능 (증가/감소)
+  - [x] 금액 합계 계산 (price × quantity)
+  - [x] 빈 장바구니 상태 처리
 - [ ] 주문 프로세스 구현
   - [ ] 주문 페이지 (`app/checkout/page.tsx`)
   - [ ] 배송지 정보 입력 (shipping_address JSONB)

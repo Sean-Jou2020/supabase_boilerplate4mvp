@@ -1,17 +1,18 @@
 /**
  * @file add-to-cart-button.tsx
- * @description 장바구니 추가 버튼 컴포넌트 (UI만)
+ * @description 장바구니 추가 버튼 컴포넌트
  *
- * Phase 3에서 장바구니 기능과 연결 예정입니다.
- * 현재는 UI만 구현하며, 클릭 시 안내 메시지를 표시합니다.
+ * 상품 상세 페이지에서 장바구니에 상품을 추가하는 버튼입니다.
  */
 
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import type { Product } from "@/types/product";
 import { ShoppingCart } from "lucide-react";
+import { addToCart } from "@/actions/cart";
 
 interface AddToCartButtonProps {
   product: Product;
@@ -19,11 +20,11 @@ interface AddToCartButtonProps {
 
 /**
  * 장바구니 추가 버튼 컴포넌트
- * Phase 3에서 실제 기능 연결 예정
  * @param product - 상품 정보
  */
 export function AddToCartButton({ product }: AddToCartButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const isOutOfStock = product.stock_quantity <= 0;
   const isInactive = !product.is_active;
@@ -32,15 +33,22 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     if (isOutOfStock || isInactive) return;
 
     setIsLoading(true);
-    // Phase 3에서 실제 장바구니 추가 기능 연결 예정
-    // 현재는 임시로 안내 메시지 표시
-    console.log("장바구니 추가 (Phase 3에서 구현 예정):", product.id);
-    
-    // 임시: 토스트 메시지 또는 알림 표시
-    setTimeout(() => {
+    try {
+      const result = await addToCart(product.id, 1);
+      
+      if (result.success) {
+        // 성공 시 장바구니 페이지로 이동하거나 메시지 표시
+        alert(result.message);
+        router.refresh(); // 페이지 새로고침 (선택적)
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      console.error("장바구니 추가 에러:", error);
+      alert("장바구니 추가 중 오류가 발생했습니다.");
+    } finally {
       setIsLoading(false);
-      alert("장바구니 기능은 Phase 3에서 구현 예정입니다.");
-    }, 500);
+    }
   };
 
   if (isInactive) {
@@ -79,4 +87,3 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     </Button>
   );
 }
-

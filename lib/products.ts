@@ -78,6 +78,18 @@ export async function getActiveProducts(
 
     const { data, error } = await query;
 
+    // 디버깅: 상품 조회 결과 확인
+    console.group("상품 조회 디버깅 (getActiveProducts)");
+    console.log("조회된 상품 수:", data?.length || 0);
+    console.log("정렬 옵션:", sort);
+    console.log("페이지:", page);
+    console.log("페이지당 아이템 수:", perPage);
+    if (data && data.length > 0) {
+      console.log("첫 번째 상품:", data[0].name);
+      console.log("마지막 상품:", data[data.length - 1].name);
+    }
+    console.groupEnd();
+
     if (error) {
       // 에러 객체의 모든 속성 확인
       const errorMessage = error.message || String(error);

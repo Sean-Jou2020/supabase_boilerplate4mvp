@@ -10,7 +10,7 @@ import type { PaginationMeta } from "@/types/pagination";
 /**
  * 페이지당 아이템 수 (고정값)
  */
-export const PER_PAGE = 12;
+export const PER_PAGE = 15;
 
 /**
  * URL 쿼리 파라미터에서 페이지 번호를 파싱합니다.
@@ -33,7 +33,7 @@ export function parsePageParam(
  * 페이지네이션 메타데이터를 생성합니다.
  * @param currentPage - 현재 페이지 번호
  * @param totalItems - 전체 아이템 수
- * @param perPage - 페이지당 아이템 수 (기본값: 12)
+ * @param perPage - 페이지당 아이템 수 (기본값: 15)
  * @returns 페이지네이션 메타데이터
  */
 export function createPaginationMeta(

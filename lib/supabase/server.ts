@@ -27,7 +27,10 @@ export function createClerkSupabaseClient() {
 
   return createClient(supabaseUrl, supabaseKey, {
     async accessToken() {
-      return (await auth()).getToken();
+      // 로그인하지 않은 사용자의 경우 null 반환 (anon key 사용)
+      // RLS가 비활성화되어 있으므로 공개 데이터 조회 가능
+      const token = await (await auth()).getToken();
+      return token ?? null;
     },
   });
 }

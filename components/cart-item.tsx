@@ -16,6 +16,7 @@ import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { updateCartItemQuantity, removeCartItem } from "@/actions/cart";
+import { ProductImagePlaceholder } from "@/components/product-image-placeholder";
 
 interface CartItemProps {
   item: CartItem;
@@ -28,10 +29,12 @@ interface CartItemProps {
 export function CartItem({ item }: CartItemProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const router = useRouter();
 
   const subtotal = item.product.price * item.quantity;
-  const hasImageUrl = item.product.image_url && item.product.image_url.trim() !== "";
+  const hasImageUrl =
+    item.product.image_url && item.product.image_url.trim() !== "";
 
   const handleQuantityChange = async (newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -77,7 +80,7 @@ export function CartItem({ item }: CartItemProps) {
       {/* 상품 이미지 */}
       <Link href={`/products/${item.product.id}`} className="flex-shrink-0">
         <div className="relative h-24 w-24 overflow-hidden rounded-lg bg-muted sm:h-32 sm:w-32">
-          {hasImageUrl ? (
+          {hasImageUrl && !imageError ? (
             <Image
               src={item.product.image_url!}
               alt={item.product.name}
@@ -85,24 +88,10 @@ export function CartItem({ item }: CartItemProps) {
               className="object-cover"
               sizes="96px"
               unoptimized={item.product.image_url!.startsWith("http")}
+              onError={() => setImageError(true)}
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
+            <ProductImagePlaceholder size="sm" />
           )}
         </div>
       </Link>
@@ -148,7 +137,9 @@ export function CartItem({ item }: CartItemProps) {
               variant="outline"
               size="icon"
               onClick={() => handleQuantityChange(item.quantity + 1)}
-              disabled={isUpdating || item.product.stock_quantity < item.quantity + 1}
+              disabled={
+                isUpdating || item.product.stock_quantity < item.quantity + 1
+              }
               className="h-8 w-8"
             >
               <Plus className="h-4 w-4" />
@@ -170,4 +161,3 @@ export function CartItem({ item }: CartItemProps) {
     </div>
   );
 }
-

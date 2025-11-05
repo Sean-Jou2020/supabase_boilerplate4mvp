@@ -8,12 +8,21 @@
 import {
   getActiveProducts,
   getActiveProductsByCategories,
+  getActiveProductsCount,
 } from "@/lib/products";
 import { ProductCard } from "@/components/product-card";
 import { CategoryFilter } from "@/components/category-filter";
 import { ProductSort } from "@/components/product-sort";
+import { Pagination } from "@/components/pagination";
+import { ErrorState } from "@/components/ui/error-state";
+import { EmptyState } from "@/components/ui/empty-state";
 import { parseCategoriesParam } from "@/lib/categories";
 import { parseSortParam } from "@/lib/sort";
+import {
+  parsePageParam,
+  createPaginationMeta,
+  PER_PAGE,
+} from "@/lib/pagination";
 
 /**
  * 상품 목록 페이지
@@ -26,21 +35,42 @@ export default async function ProductsPage({
 }) {
   const selectedCategories = parseCategoriesParam(searchParams?.categories);
   const sort = parseSortParam(searchParams?.sort);
+  const page = parsePageParam(searchParams?.page);
+
   let products = [] as any[];
+  let totalCount = 0;
   let error = null;
 
   try {
+    // 총 개수 조회
+    totalCount = await getActiveProductsCount(
+      selectedCategories.length > 0 ? selectedCategories : null,
+    );
+
+    // 상품 목록 조회 (페이지네이션 적용)
     if (selectedCategories.length > 0) {
-      products = await getActiveProductsByCategories(selectedCategories, sort);
+      products = await getActiveProductsByCategories(
+        selectedCategories,
+        sort,
+        page,
+        PER_PAGE,
+      );
     } else {
-      products = await getActiveProducts(sort);
+      products = await getActiveProducts(sort, page, PER_PAGE);
     }
   } catch (err) {
     console.error("상품 조회 실패:", err);
-    error = err instanceof Error
-      ? err.message
-      : "상품을 불러오는 중 오류가 발생했습니다.";
+    error =
+      err instanceof Error
+        ? err.message
+        : "상품을 불러오는 중 오류가 발생했습니다.";
+
+    // 에러가 발생해도 totalCount가 0이면 페이지네이션을 표시하지 않음
+    // 하지만 실제로는 상품이 있을 수 있으므로, 에러 상태를 표시
   }
+
+  // 페이지네이션 메타데이터 생성
+  const paginationMeta = createPaginationMeta(page, totalCount, PER_PAGE);
 
   return (
     <main className="min-h-[calc(100vh-80px)] px-4 py-8 md:px-8 md:py-16">
@@ -64,23 +94,30 @@ export default async function ProductsPage({
         {/* 상품 목록 섹션 */}
         <section>
           {error ? (
-            <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center">
-              <p className="text-destructive">{error}</p>
-            </div>
+            <ErrorState message={error} />
           ) : products.length === 0 ? (
-            <div className="rounded-lg border p-6 text-center">
-              <p className="text-muted-foreground">등록된 상품이 없습니다.</p>
-            </div>
+            <EmptyState
+              message="등록된 상품이 없습니다."
+              description="다른 카테고리를 선택하거나 나중에 다시 확인해주세요."
+              actionType="products"
+            />
           ) : (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              {/* 페이지네이션 */}
+              {paginationMeta.totalPages > 1 && (
+                <div className="mt-12">
+                  <Pagination meta={paginationMeta} />
+                </div>
+              )}
+            </>
           )}
         </section>
       </div>
     </main>
   );
 }
-

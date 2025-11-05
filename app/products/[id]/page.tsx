@@ -7,9 +7,9 @@
  */
 
 import { getProductById } from "@/lib/products";
-import Image from "next/image";
 import { formatPrice } from "@/lib/utils";
 import { AddToCartButton } from "@/components/add-to-cart-button";
+import { ProductImage } from "@/components/product-image";
 import { CATEGORY_LABELS } from "@/lib/categories";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -54,7 +54,6 @@ export default async function ProductDetailPage({
     );
   }
 
-  const hasImageUrl = product.image_url && product.image_url.trim() !== "";
   const isOutOfStock = product.stock_quantity <= 0;
   const isInactive = !product.is_active;
   const categoryLabel = CATEGORY_LABELS[product.category] || product.category;
@@ -74,34 +73,13 @@ export default async function ProductDetailPage({
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-16">
           {/* 상품 이미지 */}
           <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-muted">
-            {hasImageUrl ? (
-              <Image
-                src={product.image_url!}
-                alt={product.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
-                unoptimized={product.image_url!.startsWith("http")}
-                priority
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center text-muted-foreground">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-24 w-24"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-            )}
+            <ProductImage
+              imageUrl={product.image_url}
+              alt={product.name}
+              size="lg"
+              className="object-cover"
+              priority
+            />
           </div>
 
           {/* 상품 정보 */}
@@ -157,4 +135,3 @@ export default async function ProductDetailPage({
     </main>
   );
 }
-

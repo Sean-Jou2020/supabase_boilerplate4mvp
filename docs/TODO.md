@@ -56,6 +56,7 @@
     - [x] 상품 카드 컴포넌트 (이미지, 이름, 가격, 카테고리)
     - [x] 상품 상세 페이지로 이동 링크
     - [x] 반응형 그리드 레이아웃
+    - [x] 상품 이미지 없을 때 placeholder 표시
   - [x] 카테고리 기능 (다중 선택 + SSR)
     - [x] 카테고리 버튼 UI (electronics, clothing, books, food, sports, beauty, home)
     - [x] URL 쿼리 기반 필터링 (`?categories=electronics,books`)
@@ -66,17 +67,22 @@
     - [x] 인기 상품 카드 컴포넌트
     - [x] "인기 상품" 섹션 헤더 및 레이아웃
     - [x] 인기 상품 상세 페이지로 이동 링크
+  - [x] 정렬 기능 (가격오름순/가격내림순/인기순/이름순)
+  - [x] 페이지네이션 (12개씩, 번호 버튼)
+  - [x] 로딩/에러/빈 상태 처리
 - [x] 상품 목록 페이지 (`app/products/page.tsx`)
   - [x] Supabase `products` 테이블 조회
   - [x] `is_active = true` 필터링
   - [x] 카테고리 필터링 (다중 선택)
   - [x] 가격오름순/가격내림순/인기순/이름순 정렬 기능
-  - [ ] 페이지네이션 또는 무한 스크롤 (선택)
+  - [x] 페이지네이션 (12개씩, 번호 버튼)
+  - [x] 로딩/에러/빈 상태 처리
 - [x] 상품 상세 페이지 (`app/products/[id]/page.tsx`)
   - [x] 상품 정보 표시 (이름, 설명, 가격, 카테고리)
   - [x] 재고 수량 표시 (`stock_quantity`)
   - [x] 장바구니 담기 버튼 (UI만, Phase 3에서 기능 연결 예정)
   - [x] 상품 활성화 여부 확인 (`is_active`)
+  - [x] 상품 이미지 없을 때 placeholder 표시
 - [ ] 어드민 상품 등록 (MVP 제외)
   - [ ] PRD에 따라 어드민 기능은 MVP에서 제외
   - [ ] 상품 등록은 Supabase Dashboard에서 직접 수행
@@ -86,6 +92,7 @@
 - [x] 장바구니 기능
   - [x] 장바구니 페이지 (`app/cart/page.tsx`)
   - [x] 헤더에 장바구니 아이콘 추가 (Navbar 컴포넌트)
+  - [x] 장바구니 아이콘에 품목 종류 수 배지 표시 (같은 품목은 1개로 카운팅)
   - [x] `cart_items` 테이블 연동
     - [x] `clerk_id` 기반 조회 (인증된 사용자만)
     - [x] `clerk_id + product_id` UNIQUE 제약 확인
@@ -96,19 +103,20 @@
   - [x] 수량 변경 기능 (증가/감소)
   - [x] 금액 합계 계산 (price × quantity)
   - [x] 빈 장바구니 상태 처리
-- [ ] 주문 프로세스 구현
-  - [ ] 주문 페이지 (`app/checkout/page.tsx`)
-  - [ ] 배송지 정보 입력 (shipping_address JSONB)
-  - [ ] 주문 메모 입력 (order_note)
-  - [ ] 최종 금액 확인 (total_amount 계산)
-- [ ] 주문 테이블 연동
-  - [ ] `orders` 테이블에 주문 생성
-    - [ ] `clerk_id` 저장
-    - [ ] `status = 'pending'` 초기값
-    - [ ] `total_amount` 계산 후 저장
-  - [ ] `order_items` 테이블에 주문 상세 저장
-    - [ ] 주문 시점의 상품 정보 스냅샷 (product_name, price, quantity)
-    - [ ] `product_id` 참조 (나중에 참조용)
+  - [x] 상품 이미지 없을 때 placeholder 표시
+- [x] 주문 프로세스 구현
+  - [x] 주문 페이지 (`app/checkout/page.tsx`)
+  - [x] 배송지 정보 입력 (shipping_address JSONB)
+  - [x] 주문 메모 입력 (order_note)
+  - [x] 최종 금액 확인 (total_amount 계산)
+- [x] 주문 테이블 연동
+  - [x] `orders` 테이블에 주문 생성
+    - [x] `clerk_id` 저장
+    - [x] `status = 'pending'` 초기값
+    - [x] `total_amount` 계산 후 저장
+  - [x] `order_items` 테이블에 주문 상세 저장
+    - [x] 주문 시점의 상품 정보 스냅샷 (product_name, price, quantity)
+    - [x] `product_id` 참조 (나중에 참조용)
 
 ## Phase 4: 결제 통합 (1주) - Toss Payments MCP
 

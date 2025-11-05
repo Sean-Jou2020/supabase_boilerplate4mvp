@@ -15,6 +15,7 @@ import Image from "next/image";
 import type { Product } from "@/types/product";
 import { formatPrice } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { ProductImagePlaceholder } from "@/components/product-image-placeholder";
 
 interface ProductCardProps {
   product: Product;
@@ -48,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
       className={cn(
         "group flex flex-col overflow-hidden rounded-lg border bg-card shadow-sm transition-all",
         "hover:shadow-md hover:scale-[1.02]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
       )}
     >
       {/* 상품 이미지 */}
@@ -64,22 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
             onError={() => setImageError(true)}
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-muted-foreground">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-12 w-12"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-          </div>
+          <ProductImagePlaceholder size="md" />
         )}
       </div>
 
@@ -103,4 +89,3 @@ export function ProductCard({ product }: ProductCardProps) {
     </Link>
   );
 }
-

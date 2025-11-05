@@ -85,9 +85,11 @@ export default async function CartPage() {
                     계속 쇼핑하기
                   </Button>
                 </Link>
-                <Button size="lg" className="flex-1" disabled>
-                  주문하기 (Phase 3 다음 단계)
-                </Button>
+                <Link href="/checkout" className="flex-1">
+                  <Button size="lg" className="w-full">
+                    주문하기
+                  </Button>
+                </Link>
               </div>
             </div>
           </>

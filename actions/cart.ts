@@ -316,10 +316,51 @@ export async function removeCartItem(
 }
 
 /**
+ * 장바구니 품목 종류 수 조회
+ * @returns 장바구니에 담긴 고유 품목 종류 수 (같은 품목은 1개로 카운팅)
+ */
+export async function getCartItemCount(): Promise<number> {
+  try {
+    // Clerk 인증 확인
+    const { userId } = await auth();
+    if (!userId) {
+      return 0;
+    }
+
+    const supabase = createClerkSupabaseClient();
+
+    // cart_items에서 product_id만 조회하여 고유 개수 계산
+    const { data: items, error } = await supabase
+      .from("cart_items")
+      .select("product_id")
+      .eq("clerk_id", userId);
+
+    if (error) {
+      console.error("장바구니 품목 수 조회 에러:", error);
+      return 0;
+    }
+
+    if (!items || items.length === 0) {
+      return 0;
+    }
+
+    // 고유한 product_id 개수 계산 (중복 제거)
+    const uniqueProductIds = new Set(items.map((item) => item.product_id));
+    return uniqueProductIds.size;
+  } catch (error) {
+    console.error("getCartItemCount 에러:", error);
+    return 0;
+  }
+}
+
+/**
  * 장바구니 전체 비우기
  * @returns 성공 여부 및 메시지
  */
-export async function clearCart(): Promise<{ success: boolean; message: string }> {
+export async function clearCart(): Promise<{
+  success: boolean;
+  message: string;
+}> {
   try {
     // Clerk 인증 확인
     const { userId } = await auth();
@@ -358,4 +399,3 @@ export async function clearCart(): Promise<{ success: boolean; message: string }
     };
   }
 }
-

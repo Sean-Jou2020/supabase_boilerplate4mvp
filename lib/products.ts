@@ -40,6 +40,7 @@ function applySortOrder(query: any, sort: SortValue) {
  * @param sort - 정렬 옵션 (기본값: "", 최신순)
  * @param page - 페이지 번호 (기본값: 1)
  * @param perPage - 페이지당 아이템 수 (기본값: 12)
+ * @param search - 검색어 (상품명, 설명, 카테고리에서 검색)
  * @returns 활성화된 상품 목록 (is_active = true)
  * @throws 에러 발생 시 에러 메시지와 함께 에러를 던집니다.
  */
@@ -47,6 +48,7 @@ export async function getActiveProducts(
   sort: SortValue = "",
   page?: number,
   perPage: number = PER_PAGE,
+  search?: string,
 ): Promise<Product[]> {
   try {
     // 환경 변수 확인
@@ -66,6 +68,14 @@ export async function getActiveProducts(
     const supabase = createClerkSupabaseClient();
 
     let query = supabase.from("products").select("*").eq("is_active", true);
+
+    // 검색 필터 적용
+    if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`;
+      query = query.or(
+        `name.ilike.${searchTerm},description.ilike.${searchTerm},category.ilike.${searchTerm}`,
+      );
+    }
 
     query = applySortOrder(query, sort);
 
@@ -184,6 +194,7 @@ export async function getActiveProducts(
  * @param sort - 정렬 옵션 (기본값: "", 최신순)
  * @param page - 페이지 번호 (기본값: 1)
  * @param perPage - 페이지당 아이템 수 (기본값: 12)
+ * @param search - 검색어 (상품명, 설명, 카테고리에서 검색)
  * @returns 필터링된 상품 목록
  */
 export async function getActiveProductsByCategories(
@@ -191,6 +202,7 @@ export async function getActiveProductsByCategories(
   sort: SortValue = "",
   page?: number,
   perPage: number = PER_PAGE,
+  search?: string,
 ): Promise<Product[]> {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -212,6 +224,14 @@ export async function getActiveProductsByCategories(
 
     if (categories && categories.length > 0) {
       query = query.in("category", categories);
+    }
+
+    // 검색 필터 적용
+    if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`;
+      query = query.or(
+        `name.ilike.${searchTerm},description.ilike.${searchTerm},category.ilike.${searchTerm}`,
+      );
     }
 
     query = applySortOrder(query, sort);
@@ -395,11 +415,13 @@ export async function getProductById(id: string): Promise<Product | null> {
 /**
  * 활성화된 상품의 총 개수를 조회합니다.
  * @param categories - 카테고리 배열 (선택적, 필터링 시 사용)
+ * @param search - 검색어 (상품명, 설명, 카테고리에서 검색)
  * @returns 활성화된 상품의 총 개수
  * @throws 에러 발생 시 에러 메시지와 함께 에러를 던집니다.
  */
 export async function getActiveProductsCount(
   categories?: string[] | null,
+  search?: string,
 ): Promise<number> {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -425,6 +447,14 @@ export async function getActiveProductsCount(
 
     if (categories && categories.length > 0) {
       query = query.in("category", categories);
+    }
+
+    // 검색 필터 적용
+    if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`;
+      query = query.or(
+        `name.ilike.${searchTerm},description.ilike.${searchTerm},category.ilike.${searchTerm}`,
+      );
     }
 
     const { count, error } = await query;

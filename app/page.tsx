@@ -7,12 +7,14 @@ import {
 import { ProductCard } from "@/components/product-card";
 import { CategoryFilter } from "@/components/category-filter";
 import { ProductSort } from "@/components/product-sort";
+import { ProductSearch } from "@/components/product-search";
 import { Pagination } from "@/components/pagination";
 import { PopularProductsCarousel } from "@/components/popular-products-carousel";
 import { ErrorState } from "@/components/ui/error-state";
 import { EmptyState } from "@/components/ui/empty-state";
 import { parseCategoriesParam } from "@/lib/categories";
 import { parseSortParam } from "@/lib/sort";
+import { parseSearchParam } from "@/lib/search";
 import {
   parsePageParam,
   createPaginationMeta,
@@ -32,6 +34,7 @@ export default async function Home({
   const selectedCategories = parseCategoriesParam(searchParams?.categories);
   const sort = parseSortParam(searchParams?.sort);
   const page = parsePageParam(searchParams?.page);
+  const search = parseSearchParam(searchParams?.search);
 
   let products = [] as any[];
   let popularProducts = [] as any[];
@@ -43,6 +46,7 @@ export default async function Home({
     // 총 개수 조회
     totalCount = await getActiveProductsCount(
       selectedCategories.length > 0 ? selectedCategories : null,
+      search || undefined,
     );
 
     // 상품 목록 조회 (페이지네이션 적용)
@@ -52,9 +56,10 @@ export default async function Home({
         sort,
         page,
         PER_PAGE,
+        search || undefined,
       );
     } else {
-      products = await getActiveProducts(sort, page, PER_PAGE);
+      products = await getActiveProducts(sort, page, PER_PAGE, search || undefined);
     }
   } catch (err) {
     console.error("상품 조회 실패:", err);
@@ -76,21 +81,19 @@ export default async function Home({
   }
 
   return (
-    <main className="min-h-[calc(100vh-80px)] px-4 py-8 md:px-8 md:py-16">
-      <div className="mx-auto w-full max-w-7xl">
+    <main className="min-h-[calc(100vh-80px)] px-3 py-4 md:px-4 md:py-6 lg:px-6 lg:py-8">
+      <div className="mx-auto w-full max-w-[1200px]">
         {/* 헤더 섹션 */}
-        <section className="mb-12 text-center">
-          <h1 className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl">
+        <section className="mb-8">
+          <h1 className="mb-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
             쇼핑몰에 오신 것을 환영합니다
           </h1>
-          <p className="text-lg text-muted-foreground md:text-xl">
-            다양한 상품을 확인하고 구매해보세요
-          </p>
+          <ProductSearch initialValue={search} />
         </section>
 
         {/* 인기상품 섹션 (항상 표시) */}
         {popularProducts.length > 0 && (
-          <section className="mb-16">
+          <section className="mb-12">
             <h2 className="mb-6 text-2xl font-semibold md:text-3xl">
               인기 상품
             </h2>
@@ -119,7 +122,7 @@ export default async function Home({
               </h2>
               <CategoryFilter selected={selectedCategories} />
               <ProductSort selected={sort} />
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

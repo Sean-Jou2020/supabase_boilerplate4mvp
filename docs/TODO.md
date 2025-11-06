@@ -14,17 +14,18 @@
   - [ ] NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY / CLERK_SECRET_KEY
   - [ ] NEXT_PUBLIC_STORAGE_BUCKET=uploads
   - [ ] Toss Payments 관련 환경 변수 (테스트 모드)
-- [ ] Supabase 프로젝트 생성 및 스키마 적용
-  - [ ] `supabase/migrations/schema.sql` 실행 (users 테이블)
-  - [ ] `supabase/migrations/update_shopping_mall_schema.sql` 실행
-    - [ ] `products` 테이블 생성 (20개 샘플 데이터 포함)
-    - [ ] `cart_items` 테이블 생성 (clerk_id 기반)
-    - [ ] `orders` 테이블 생성 (status: pending/confirmed/shipped/delivered/cancelled)
-    - [ ] `order_items` 테이블 생성
-    - [ ] `update_updated_at_column()` 함수 생성
-    - [ ] updated_at 트리거 등록
-    - [ ] 인덱스 생성 (성능 최적화)
-  - [ ] RLS 비활성화 확인 (PRD 제약사항: RLS 미사용)
+- [x] Supabase 프로젝트 생성 및 스키마 적용
+  - [x] `supabase/migrations/schema.sql` 실행 (users 테이블)
+  - [x] `supabase/migrations/update_shopping_mall_schema.sql` 실행
+    - [x] `products` 테이블 생성 (기본 샘플 데이터 포함)
+    - [x] 가상상품 20개 추가 (`supabase/migrations/20250105010000_add_virtual_products.sql`)
+    - [x] `cart_items` 테이블 생성 (clerk_id 기반)
+    - [x] `orders` 테이블 생성 (status: pending/confirmed/shipped/delivered/cancelled)
+    - [x] `order_items` 테이블 생성
+    - [x] `update_updated_at_column()` 함수 생성
+    - [x] updated_at 트리거 등록
+    - [x] 인덱스 생성 (성능 최적화)
+  - [x] RLS 비활성화 확인 (PRD 제약사항: RLS 미사용)
   - [ ] GRANT 권한 확인 (anon, authenticated, service_role)
 - [x] Clerk 연동 (회원가입/로그인)
   - [ ] Clerk Dashboard에서 Supabase 통합 활성화 (수동 확인 필요)
@@ -67,15 +68,24 @@
     - [x] 인기 상품 카드 컴포넌트
     - [x] "인기 상품" 섹션 헤더 및 레이아웃
     - [x] 인기 상품 상세 페이지로 이동 링크
+    - [x] 데스크톱에서 4.5개가 보이도록 카드 너비 조정 (245px)
+  - [x] 검색 기능
+    - [x] 검색 컴포넌트 생성 (`components/product-search.tsx`)
+    - [x] 상품명, 설명, 카테고리에서 검색 가능
+    - [x] 검색 버튼 클릭 또는 Enter 키로 검색 실행
+    - [x] 검색 버튼을 입력 필드 안에 통합
+    - [x] 홈페이지와 상품 목록 페이지에 검색창 추가
+    - [x] URL 쿼리 파라미터 기반 검색 (`?search=검색어`)
   - [x] 정렬 기능 (가격오름순/가격내림순/인기순/이름순)
-  - [x] 페이지네이션 (12개씩, 번호 버튼)
+  - [x] 페이지네이션 (15개씩, 번호 버튼)
   - [x] 로딩/에러/빈 상태 처리
 - [x] 상품 목록 페이지 (`app/products/page.tsx`)
   - [x] Supabase `products` 테이블 조회
   - [x] `is_active = true` 필터링
+  - [x] 검색 기능 (상품명, 설명, 카테고리에서 검색)
   - [x] 카테고리 필터링 (다중 선택)
   - [x] 가격오름순/가격내림순/인기순/이름순 정렬 기능
-  - [x] 페이지네이션 (12개씩, 번호 버튼)
+  - [x] 페이지네이션 (15개씩, 번호 버튼)
   - [x] 로딩/에러/빈 상태 처리
 - [x] 상품 상세 페이지 (`app/products/[id]/page.tsx`)
   - [x] 상품 정보 표시 (이름, 설명, 가격, 카테고리)
@@ -143,20 +153,21 @@
 
 ## Phase 5: 마이페이지 (0.5주)
 
-- [ ] 마이페이지 기본 레이아웃 (`app/my/page.tsx`)
-  - [ ] 사용자 정보 표시 (Clerk에서 가져오기)
-  - [ ] 네비게이션 메뉴 (주문 내역 등)
-- [ ] 주문 내역 조회 (`app/my/orders/page.tsx`)
-  - [ ] `orders` 테이블 조회 (clerk_id 기반)
-  - [ ] 최신순 정렬 (`created_at DESC`)
-  - [ ] 주문 상태 표시 (pending, confirmed, shipped, delivered, cancelled)
-  - [ ] 주문 총액 표시
-  - [ ] 주문 날짜 표시
-- [ ] 주문 상세 보기 (`app/my/orders/[id]/page.tsx`)
-  - [ ] 주문 정보 표시 (주문 ID, 상태, 총액, 배송지, 주문 메모)
-  - [ ] `order_items` 조회하여 주문 상세 아이템 목록 표시
-  - [ ] 각 아이템 정보 (상품명, 수량, 단가, 소계)
-  - [ ] 주문 취소 버튼 (status가 'pending'일 때만)
+- [x] 마이페이지 기본 레이아웃 (`app/my/page.tsx`)
+  - [x] 사용자 정보 표시 (Clerk에서 가져오기)
+  - [x] 네비게이션 메뉴 (주문 내역 등)
+  - [x] Navbar에 마이페이지 진입 버튼 추가
+- [x] 주문 내역 조회 (`app/my/orders/page.tsx`)
+  - [x] `orders` 테이블 조회 (clerk_id 기반)
+  - [x] 최신순 정렬 (`created_at DESC`)
+  - [x] 주문 상태 표시 (pending, confirmed, shipped, delivered, cancelled)
+  - [x] 주문 총액 표시
+  - [x] 주문 날짜 표시
+- [x] 주문 상세 보기 (`app/my/orders/[id]/page.tsx`)
+  - [x] 주문 정보 표시 (주문 ID, 상태, 총액, 배송지, 주문 메모)
+  - [x] `order_items` 조회하여 주문 상세 아이템 목록 표시
+  - [x] 각 아이템 정보 (상품명, 수량, 단가, 소계)
+  - [x] 주문 취소 버튼 (status가 'pending'일 때만)
 
 ## Phase 6: 테스트 & 배포 (0.5주)
 
@@ -216,7 +227,8 @@
 
 ### 데이터베이스 스키마 구조
 
-- `products`: 상품 정보 (20개 샘플 데이터 포함)
+- `products`: 상품 정보 (60개 상품, 기본 상품 + 가상상품 20개 포함)
+  - 가상상품: 온라인 강의, 전자책, 소프트웨어 템플릿, 멤버십, 디지털 서비스 등
 - `cart_items`: 장바구니 (clerk_id 기반)
 - `orders`: 주문 정보 (status 관리)
 - `order_items`: 주문 상세 (스냅샷 방식)

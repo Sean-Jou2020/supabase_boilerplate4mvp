@@ -13,11 +13,13 @@ import {
 import { ProductCard } from "@/components/product-card";
 import { CategoryFilter } from "@/components/category-filter";
 import { ProductSort } from "@/components/product-sort";
+import { ProductSearch } from "@/components/product-search";
 import { Pagination } from "@/components/pagination";
 import { ErrorState } from "@/components/ui/error-state";
 import { EmptyState } from "@/components/ui/empty-state";
 import { parseCategoriesParam } from "@/lib/categories";
 import { parseSortParam } from "@/lib/sort";
+import { parseSearchParam } from "@/lib/search";
 import {
   parsePageParam,
   createPaginationMeta,
@@ -36,6 +38,7 @@ export default async function ProductsPage({
   const selectedCategories = parseCategoriesParam(searchParams?.categories);
   const sort = parseSortParam(searchParams?.sort);
   const page = parsePageParam(searchParams?.page);
+  const search = parseSearchParam(searchParams?.search);
 
   let products = [] as any[];
   let totalCount = 0;
@@ -45,6 +48,7 @@ export default async function ProductsPage({
     // 총 개수 조회
     totalCount = await getActiveProductsCount(
       selectedCategories.length > 0 ? selectedCategories : null,
+      search || undefined,
     );
 
     // 상품 목록 조회 (페이지네이션 적용)
@@ -54,9 +58,10 @@ export default async function ProductsPage({
         sort,
         page,
         PER_PAGE,
+        search || undefined,
       );
     } else {
-      products = await getActiveProducts(sort, page, PER_PAGE);
+      products = await getActiveProducts(sort, page, PER_PAGE, search || undefined);
     }
   } catch (err) {
     console.error("상품 조회 실패:", err);
@@ -73,20 +78,18 @@ export default async function ProductsPage({
   const paginationMeta = createPaginationMeta(page, totalCount, PER_PAGE);
 
   return (
-    <main className="min-h-[calc(100vh-80px)] px-4 py-8 md:px-8 md:py-16">
-      <div className="mx-auto w-full max-w-7xl">
+    <main className="min-h-[calc(100vh-80px)] px-3 py-4 md:px-4 md:py-6 lg:px-6 lg:py-8">
+      <div className="mx-auto w-full max-w-[1200px]">
         {/* 헤더 섹션 */}
-        <section className="mb-12 text-center">
-          <h1 className="mb-4 text-4xl font-bold md:text-5xl lg:text-6xl">
+        <section className="mb-8">
+          <h1 className="mb-4 text-center text-4xl font-bold md:text-5xl lg:text-6xl">
             상품 목록
           </h1>
-          <p className="text-lg text-muted-foreground md:text-xl">
-            다양한 상품을 확인하고 구매해보세요
-          </p>
+          <ProductSearch initialValue={search} />
         </section>
 
         {/* 필터 및 정렬 섹션 */}
-        <section className="mb-8">
+        <section className="mb-6">
           <CategoryFilter selected={selectedCategories} />
           <ProductSort selected={sort} />
         </section>
@@ -103,7 +106,7 @@ export default async function ProductsPage({
             />
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

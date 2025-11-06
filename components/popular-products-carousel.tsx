@@ -33,9 +33,10 @@ export function PopularProductsCarousel({ products }: PopularProductsCarouselPro
   const extendedProducts = [...products, ...products, ...products];
 
   // 카드 너비 계산 (gap 포함)
+  // 데스크톱(1200px)에서 4.5개가 보이도록: (1200 - 4*24) / 4.5 ≈ 245px + gap
   const getCardWidth = () => {
-    if (typeof window === "undefined") return 320;
-    if (window.innerWidth >= 1024) return 320 + 24; // lg + gap
+    if (typeof window === "undefined") return 269;
+    if (window.innerWidth >= 1024) return 245 + 24; // lg: 4.5개 표시 (245px + gap)
     if (window.innerWidth >= 768) return 300 + 24; // md + gap
     return 280 + 24; // sm + gap
   };
@@ -160,7 +161,7 @@ export function PopularProductsCarousel({ products }: PopularProductsCarouselPro
         {extendedProducts.map((product, index) => (
           <div
             key={`${product.id}-${index}`}
-            className="min-w-[280px] flex-shrink-0 sm:min-w-[300px] md:min-w-[320px]"
+            className="min-w-[280px] flex-shrink-0 sm:min-w-[300px] md:min-w-[300px] lg:min-w-[245px]"
           >
             <ProductCard product={product} />
           </div>
